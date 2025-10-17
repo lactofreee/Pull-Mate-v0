@@ -12,7 +12,7 @@ import { LayoutDashboard, GitPullRequest, FolderGit2, Activity, Settings, FileTe
 const navigation = [
   {
     name: "Dashboard",
-    href: "/",
+    href: "/dashboard", // Updated dashboard route
     icon: LayoutDashboard,
   },
   {
