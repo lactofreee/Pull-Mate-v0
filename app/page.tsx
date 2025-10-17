@@ -1,0 +1,19 @@
+import { Header } from "@/components/header"
+import { Sidebar } from "@/components/sidebar"
+import { DashboardContent } from "@/components/dashboard-content"
+
+export default function DashboardPage() {
+  return (
+    <div className="min-h-screen bg-background">
+      <Header />
+      <div className="flex">
+        <aside className="hidden w-64 border-r bg-sidebar md:block">
+          <Sidebar />
+        </aside>
+        <main className="flex-1">
+          <DashboardContent />
+        </main>
+      </div>
+    </div>
+  )
+}
