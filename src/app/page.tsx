@@ -7,17 +7,17 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col items-center min-h-screen bg-background">
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 md:px-6">
         <div className="flex items-center justify-center">
           <div className="container flex h-16 items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="text-2xl font-bold px-4">Pull-Mate</span>
+              <span className="lg:text-xl font-bold">Pull-Mate</span>
             </div>
-            <div className="flex items-center gap-4">
-              <ModeToggle />
+            <div className="flex items-center">
               <Button asChild variant="ghost">
                 <Link href="/login">Sign In</Link>
               </Button>
+              <ModeToggle />
             </div>
           </div>
         </div>
