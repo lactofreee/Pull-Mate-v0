@@ -3,7 +3,7 @@
 import { useSpring, animated, config } from "@react-spring/web";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
-import { Button } from "@/src/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 
 export function ModeToggle() {

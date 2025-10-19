@@ -2,25 +2,13 @@ import Link from "next/link";
 
 import { Github, Zap, Shield, Sparkles, ArrowRight } from "lucide-react";
 import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
-import { authOptions } from "./api/auth/[...nextauth]/route";
+
 import { Button } from "../components/ui/button";
 import { ModeToggle } from "../components/mode-toggle";
-
-async function LoginButton() {
-  return (
-    <Button asChild size="lg" className="h-12 px-8">
-      <Link href="/login">
-        <Github className="mr-2 h-5 w-5" />
-        Sign in with GitHub
-      </Link>
-    </Button>
-  );
-}
+import { auth, signOut } from "../auth";
 
 export default async function LandingPage() {
-  const session = await getServerSession(authOptions);
-  if (session) redirect("/dashboard");
+  const session = await auth();
   return (
     <div className="flex flex-col items-center min-h-screen bg-background">
       {/* Header */}
@@ -31,9 +19,12 @@ export default async function LandingPage() {
               <span className="lg:text-xl font-bold">Pull-Mate</span>
             </div>
             <div className="flex items-center">
-              <Button asChild variant="ghost">
-                <Link href="/login">Sign In</Link>
-              </Button>
+              {!session && (
+                <Button asChild variant="ghost">
+                  <Link href="/login">Sign In</Link>
+                </Button>
+              )}
+
               <ModeToggle />
             </div>
           </div>

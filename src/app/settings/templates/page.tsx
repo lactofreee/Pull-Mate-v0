@@ -1,6 +1,6 @@
-import { Header } from "@/src/components/header";
-import { Sidebar } from "@/src/components/sidebar";
-import { TemplateEditor } from "@/src/components/template-editor";
+import { Header } from "@/components/header";
+import { Sidebar } from "@/components/sidebar";
+import { TemplateEditor } from "@/components/template-editor";
 
 export default function TemplatesPage() {
   return (

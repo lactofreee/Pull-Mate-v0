@@ -1,13 +1,9 @@
 "use client";
 
-import { ModeToggle } from "@/src/components/mode-toggle";
-import { MobileSidebar } from "@/src/components/sidebar";
-import { Button } from "@/src/components/ui/button";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/src/components/ui/avatar";
+import { ModeToggle } from "@/components/mode-toggle";
+import { MobileSidebar } from "@/components/sidebar";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,7 +11,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/src/components/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 import { User, LogOut, Settings } from "lucide-react";
 import { signOut } from "next-auth/react";
 

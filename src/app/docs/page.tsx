@@ -1,6 +1,6 @@
-import { Header } from "@/src/components/header";
-import { Sidebar } from "@/src/components/sidebar";
-import { DocsContent } from "@/src/components/docs-content";
+import { Header } from "@/components/header";
+import { Sidebar } from "@/components/sidebar";
+import { DocsContent } from "@/components/docs-content";
 
 export default function DocsPage() {
   return (

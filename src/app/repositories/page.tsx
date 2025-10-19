@@ -1,6 +1,6 @@
-import { Header } from "@/src/components/header";
-import { Sidebar } from "@/src/components/sidebar";
-import { RepositoriesContent } from "@/src/components/repositories-content";
+import { Header } from "@/components/header";
+import { Sidebar } from "@/components/sidebar";
+import { RepositoriesContent } from "@/components/repositories-content";
 
 export default function RepositoriesPage() {
   return (

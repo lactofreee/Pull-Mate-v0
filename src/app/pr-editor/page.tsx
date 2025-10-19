@@ -1,6 +1,6 @@
-import { Header } from "@/src/components/header";
-import { Sidebar } from "@/src/components/sidebar";
-import { PREditorContent } from "@/src/components/pr-editor-content";
+import { Header } from "@/components/header";
+import { Sidebar } from "@/components/sidebar";
+import { PREditorContent } from "@/components/pr-editor-content";
 
 export default function PREditorPage() {
   return (

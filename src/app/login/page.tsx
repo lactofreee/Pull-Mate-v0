@@ -1,24 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@/src/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/src/components/ui/card";
+} from "@/components/ui/card";
 import { Github, ArrowLeft } from "lucide-react";
-import { ModeToggle } from "@/src/components/mode-toggle";
+import { ModeToggle } from "@/components/mode-toggle";
+import { GitHubSignInButton } from "@/features/auth/github-signin-button";
 
 export default function LoginPage() {
-  const handleGitHubLogin = () => {
-    // In a real implementation, this would redirect to GitHub OAuth
-    // For now, we'll redirect to dashboard
-    window.location.href = "/dashboard";
-  };
-
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -53,15 +48,7 @@ export default function LoginPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Button
-                className="w-full h-12"
-                size="lg"
-                onClick={handleGitHubLogin}
-              >
-                <Github className="mr-2 h-5 w-5" />
-                Continue with GitHub
-              </Button>
-
+              <GitHubSignInButton />
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <span className="w-full border-t" />
