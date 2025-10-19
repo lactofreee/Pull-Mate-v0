@@ -17,13 +17,11 @@ import {
   DropdownMenuTrigger,
 } from "@/src/components/ui/dropdown-menu";
 import { User, LogOut, Settings } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
 
 export function Header() {
-  const router = useRouter();
-
   const handleLogout = () => {
-    router.push("/");
+    signOut();
   };
 
   return (

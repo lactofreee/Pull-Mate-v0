@@ -1,9 +1,26 @@
 import Link from "next/link";
-import { Button } from "@/src/components/ui/button";
-import { Github, Zap, Shield, Sparkles, ArrowRight } from "lucide-react";
-import { ModeToggle } from "@/src/components/mode-toggle";
 
-export default function LandingPage() {
+import { Github, Zap, Shield, Sparkles, ArrowRight } from "lucide-react";
+import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { authOptions } from "./api/auth/[...nextauth]/route";
+import { Button } from "../components/ui/button";
+import { ModeToggle } from "../components/mode-toggle";
+
+async function LoginButton() {
+  return (
+    <Button asChild size="lg" className="h-12 px-8">
+      <Link href="/login">
+        <Github className="mr-2 h-5 w-5" />
+        Sign in with GitHub
+      </Link>
+    </Button>
+  );
+}
+
+export default async function LandingPage() {
+  const session = await getServerSession(authOptions);
+  if (session) redirect("/dashboard");
   return (
     <div className="flex flex-col items-center min-h-screen bg-background">
       {/* Header */}

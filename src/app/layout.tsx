@@ -3,9 +3,11 @@ import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { Analytics } from "@vercel/analytics/next";
-import { ThemeProvider } from "@/src/components/theme-provider";
 import { Suspense } from "react";
 import "./globals.css";
+import RootProvider from "../components/context/RootProvider";
+import { SidebarProvider } from "../components/ui/sidebar";
+
 
 export const metadata: Metadata = {
   title: "Pull-Mate - AI Pull Request Assistant",
@@ -20,17 +22,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="ko" suppressHydrationWarning>
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
         <Suspense fallback={null}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <div className="min-h-screen w-full">{children}</div>
-          </ThemeProvider>
+          <RootProvider>
+            {/* <SidebarProvider> */}
+              <div className="min-h-screen w-full">{children}</div>
+            {/* </SidebarProvider> */}
+          </RootProvider>
         </Suspense>
         <Analytics />
       </body>
