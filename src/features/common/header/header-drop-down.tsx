@@ -16,7 +16,7 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 
 export function HeaderDropDown() {
-  const { data, status } = useSession();
+  const { data } = useSession();
 
   if (!data?.user?.name || !data.user.email) return null;
 

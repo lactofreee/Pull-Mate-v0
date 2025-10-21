@@ -70,8 +70,6 @@ function getLanguageColor(language: string) {
 }
 
 export function RepositoriesContent({ repos }: { repos: Repo[] }) {
-  console.log(repos);
-
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTab, setSelectedTab] = useState("all");
   const [isAddRepoOpen, setIsAddRepoOpen] = useState(false);

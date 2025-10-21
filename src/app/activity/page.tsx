@@ -1,6 +1,7 @@
 import { Header } from "@/features/common/header/header";
 import { Sidebar } from "@/components/sidebar";
-import { ActivityLogContent } from "@/src/features/activity/components/activity-log-content";
+import { ActivityLogContent } from "@/features/activity/components/activity-log-content";
+
 
 export default function ActivityLogPage() {
   return (
