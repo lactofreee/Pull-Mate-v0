@@ -252,9 +252,6 @@ export function SettingsContent() {
               </div>
             </CardContent>
           </Card>
-          <div className="w-full flex justify-center">
-            <GitHubSignOutButton />
-          </div>
         </TabsContent>
 
         <TabsContent value="ai" className="space-y-6">
@@ -779,6 +776,9 @@ export function SettingsContent() {
               </div>
             </CardContent>
           </Card>
+          <div className="w-full flex justify-center">
+            <GitHubSignOutButton />
+          </div>
         </TabsContent>
       </Tabs>
     </div>
