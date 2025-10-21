@@ -1,4 +1,4 @@
-import { Header } from "@/components/header";
+import { Header } from "@/features/common/header/header";
 import { Sidebar } from "@/components/sidebar";
 import { SettingsContent } from "@/components/settings-content";
 

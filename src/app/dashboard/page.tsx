@@ -1,8 +1,14 @@
-import { Header } from "@/components/header";
+import { Header } from "@/features/common/header/header";
 import { Sidebar } from "@/components/sidebar";
 import { DashboardContent } from "@/features/dashboard/components/dashboard-content";
+import { auth } from "@/auth";
+import { getUserRepos, safeOctokitCall } from "@/lib/github/octokit";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  // const session = await auth();
+  // const token = session?.accessToken;
+  // const repos = token ? await safeOctokitCall(() => getUserRepos(token)) : null;
+
   return (
     <div className="min-h-screen bg-background">
       <Header />

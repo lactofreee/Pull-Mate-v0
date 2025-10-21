@@ -39,84 +39,7 @@ import {
   Bell,
   BellOff,
 } from "lucide-react";
-
-const repositories = [
-  {
-    id: 1,
-    name: "web-app",
-    fullName: "company/web-app",
-    description: "Main web application with React and TypeScript",
-    isPrivate: false,
-    stars: 124,
-    forks: 23,
-    language: "TypeScript",
-    lastActivity: "2 hours ago",
-    isConnected: true,
-    notifications: true,
-    owner: "company",
-    url: "https://github.com/company/web-app",
-  },
-  {
-    id: 2,
-    name: "mobile-ui",
-    fullName: "company/mobile-ui",
-    description: "React Native mobile application UI components",
-    isPrivate: true,
-    stars: 45,
-    forks: 8,
-    language: "JavaScript",
-    lastActivity: "1 day ago",
-    isConnected: true,
-    notifications: false,
-    owner: "company",
-    url: "https://github.com/company/mobile-ui",
-  },
-  {
-    id: 3,
-    name: "api-backend",
-    fullName: "company/api-backend",
-    description: "Node.js REST API backend with Express and MongoDB",
-    isPrivate: true,
-    stars: 67,
-    forks: 12,
-    language: "JavaScript",
-    lastActivity: "3 days ago",
-    isConnected: false,
-    notifications: true,
-    owner: "company",
-    url: "https://github.com/company/api-backend",
-  },
-  {
-    id: 4,
-    name: "docs",
-    fullName: "company/docs",
-    description: "Documentation site built with Next.js and MDX",
-    isPrivate: false,
-    stars: 89,
-    forks: 34,
-    language: "MDX",
-    lastActivity: "1 week ago",
-    isConnected: true,
-    notifications: true,
-    owner: "company",
-    url: "https://github.com/company/docs",
-  },
-  {
-    id: 5,
-    name: "design-system",
-    fullName: "company/design-system",
-    description: "Shared design system components and tokens",
-    isPrivate: false,
-    stars: 156,
-    forks: 45,
-    language: "TypeScript",
-    lastActivity: "4 days ago",
-    isConnected: false,
-    notifications: false,
-    owner: "company",
-    url: "https://github.com/company/design-system",
-  },
-];
+import { Repo } from "../../types/repos";
 
 const organizations = [
   {
@@ -146,15 +69,19 @@ function getLanguageColor(language: string) {
   return colors[language] || "bg-gray-500";
 }
 
-export function RepositoriesContent() {
+export function RepositoriesContent({ repos }: { repos: Repo[] }) {
+  console.log(repos);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTab, setSelectedTab] = useState("all");
   const [isAddRepoOpen, setIsAddRepoOpen] = useState(false);
 
-  const filteredRepos = repositories.filter((repo) => {
+  const filteredRepos = repos.filter((repo) => {
     const matchesSearch =
       repo.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      repo.description.toLowerCase().includes(searchQuery.toLowerCase());
+      (repo.description ?? "")
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
 
     if (selectedTab === "connected") return matchesSearch && repo.isConnected;
     if (selectedTab === "disconnected")
@@ -288,7 +215,7 @@ export function RepositoriesContent() {
                         <div className="flex items-center gap-1">
                           <div
                             className={`h-3 w-3 rounded-full ${getLanguageColor(
-                              repo.language
+                              repo.language ?? ""
                             )}`}
                           />
                           {repo.language}

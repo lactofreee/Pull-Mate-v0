@@ -1,30 +1,40 @@
 import Link from "next/link";
 
 import { Github, Zap, Shield, Sparkles, ArrowRight } from "lucide-react";
-import { redirect } from "next/navigation";
 
 import { Button } from "../components/ui/button";
 import { ModeToggle } from "../components/mode-toggle";
-import { auth, signOut } from "../auth";
+import { auth } from "../auth";
+import { MobileSidebar } from "@/components/sidebar";
 
 export default async function LandingPage() {
   const session = await auth();
   return (
     <div className="flex flex-col items-center min-h-screen bg-background">
-      {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 md:px-6">
         <div className="flex items-center justify-center">
           <div className="container flex h-16 items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="lg:text-xl font-bold">Pull-Mate</span>
+            <div className="flex items-center gap-3">
+              <div className="md:hidden">
+                <MobileSidebar />
+              </div>
+              <Link
+                href="/"
+                className="text-lg sm:text-xl font-bold tracking-tight"
+              >
+                Pull-Mate
+              </Link>
             </div>
-            <div className="flex items-center">
+            <div className="flex items-center gap-2">
               {!session && (
-                <Button asChild variant="ghost">
+                <Button
+                  asChild
+                  variant="ghost"
+                  className="text-sm sm:text-base"
+                >
                   <Link href="/login">Sign In</Link>
                 </Button>
               )}
-
               <ModeToggle />
             </div>
           </div>
