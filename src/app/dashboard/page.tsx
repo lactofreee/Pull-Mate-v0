@@ -1,13 +1,8 @@
 import { Header } from "@/features/common/header/header";
 import { Sidebar } from "@/components/sidebar";
 import { DashboardContent } from "@/features/dashboard/components/dashboard-content";
-import { auth } from "@/auth";
-import { getRepoCommits, safeOctokitCall } from "@/lib/github/octokit";
 
 export default async function DashboardPage() {
-  //  const session = await auth();
-  //   const token = session?.accessToken;
-  //   const data = token ? await safeOctokitCall(() => getRepoCommits(token, )) : null;
   return (
     <div className="min-h-screen bg-background">
       <Header />

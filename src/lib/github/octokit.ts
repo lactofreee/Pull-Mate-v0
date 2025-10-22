@@ -36,6 +36,51 @@ export async function getRepo(token: string, owner: string, repo: string) {
   return res.data;
 }
 
+// 특정 레포 브랜치 목록 조회
+export async function getRepoBranches(
+  token: string,
+  owner: string,
+  repo: string
+) {
+  try {
+    const octokit = new Octokit({ auth: token });
+    const { data } = await octokit.repos.listBranches({
+      owner,
+      repo,
+    });
+    return data;
+  } catch (error) {
+    console.error(`❌ getRepoBranches error (${repo}):`, error);
+    return [];
+  }
+}
+
+// 브랜치 간 커밋 비교
+export async function compareBranches(
+  token: string,
+  owner: string,
+  repo: string,
+  base: string,
+  head: string
+) {
+  try {
+    const octokit = new Octokit({ auth: token });
+    const { data } = await octokit.repos.compareCommits({
+      owner,
+      repo,
+      base,
+      head,
+    });
+    return data;
+  } catch (error) {
+    console.error(
+      `❌ compareBranches error (${repo}:${base} → ${head}):`,
+      error
+    );
+    return null;
+  }
+}
+
 // 특정 저장소에서 특정 사용자의 커밋 가져오기
 export async function getRepoCommits(
   token: string,
@@ -44,20 +89,38 @@ export async function getRepoCommits(
   username: string
 ) {
   try {
-    const octokit = getOctokit(token);
-    const { data } = await octokit.repos.listCommits({
+    const octokit = new Octokit({ auth: token });
+
+    // 최근 10개 커밋 가져오기
+    const { data: commits } = await octokit.repos.listCommits({
       owner,
       repo,
       author: username,
       per_page: 10,
     });
 
-    return data.map((commit) => ({
-      sha: commit.sha,
-      message: commit.commit.message,
-      date: commit.commit.author?.date,
-      url: commit.html_url,
-    }));
+    // 각 커밋 상세 정보 가져오기
+    const detailedCommits = await Promise.all(
+      commits.map(async (commit) => {
+        const detail = await safeOctokitCall(() =>
+          octokit.repos.getCommit({
+            owner,
+            repo,
+            ref: commit.sha,
+          })
+        );
+
+        return {
+          sha: commit.sha,
+          message: commit.commit.message,
+          date: commit.commit.author?.date,
+          url: commit.html_url,
+          files: detail?.data.files ?? [],
+        };
+      })
+    );
+
+    return detailedCommits;
   } catch (error) {
     console.error("❌ getRepoCommits error:", error);
     return [];

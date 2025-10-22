@@ -8,7 +8,7 @@ declare module "next-auth" {
   }
 }
 
-const GITHUB_SCOPES = "repo";
+const GITHUB_SCOPES = "repo read:user";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
