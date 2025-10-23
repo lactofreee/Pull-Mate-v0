@@ -1,4 +1,6 @@
+import { formatLastActivity } from "@/app/utils/format-last-activity";
 import { Octokit } from "@octokit/rest";
+import { CommitInfo } from "../../../types/repos";
 
 export function getOctokit(token: string) {
   return new Octokit({ auth: token });
@@ -81,17 +83,18 @@ export async function compareBranches(
   }
 }
 
-// 특정 저장소에서 특정 사용자의 커밋 가져오기
+// 특정 레포 커밋 조회 및 커스텀 리턴
 export async function getRepoCommits(
   token: string,
   owner: string,
   repo: string,
   username: string
-) {
+): Promise<CommitInfo[]> {
   try {
     const octokit = new Octokit({ auth: token });
 
-    // 최근 10개 커밋 가져오기
+    const { data: repoData } = await octokit.repos.get({ owner, repo });
+    const defaultBranch = repoData.default_branch;
     const { data: commits } = await octokit.repos.listCommits({
       owner,
       repo,
@@ -99,9 +102,8 @@ export async function getRepoCommits(
       per_page: 10,
     });
 
-    // 각 커밋 상세 정보 가져오기
     const detailedCommits = await Promise.all(
-      commits.map(async (commit) => {
+      commits.map(async (commit, index) => {
         const detail = await safeOctokitCall(() =>
           octokit.repos.getCommit({
             owner,
@@ -110,12 +112,22 @@ export async function getRepoCommits(
           })
         );
 
+        const filesChanged = detail?.data.files?.length ?? 0;
+        const branch = commit.commit?.tree?.url?.includes(defaultBranch)
+          ? defaultBranch
+          : defaultBranch;
+
+        const timestamp = formatLastActivity(commit.commit.author?.date ?? "");
+
         return {
-          sha: commit.sha,
+          id: index + 1,
+          hash: commit.sha.substring(0, 7),
           message: commit.commit.message,
-          date: commit.commit.author?.date,
+          branch,
+          author: commit.commit.author?.name || username,
+          timestamp,
+          filesChanged,
           url: commit.html_url,
-          files: detail?.data.files ?? [],
         };
       })
     );

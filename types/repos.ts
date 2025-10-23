@@ -7,14 +7,15 @@ export interface GitHubRepo {
   stargazers_count: number;
   forks_count: number;
   language: string | null;
-  updated_at: string | null; // ← 여기서 null 가능
+  updated_at: string | null;
   owner: {
     login: string;
   };
   html_url: string;
+  default_branch?: string;
 }
 
-export interface Repo {
+export interface Repository {
   id: number;
   name: string;
   fullName: string;
@@ -24,8 +25,20 @@ export interface Repo {
   forks: number;
   language: string | null;
   lastActivity: string;
+  url: string;
+  owner: string;
+  defaultBranch?: string;
   isConnected: boolean;
   notifications: boolean;
-  owner: string;
+}
+
+export interface CommitInfo {
+  id: number;
+  hash: string;
+  message: string;
+  branch: string;
+  author: string;
+  timestamp: string;
+  filesChanged: number;
   url: string;
 }

@@ -1,71 +1,68 @@
-"use client";
+"use client"
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { GitCommit, GitPullRequest, FileText, Settings2 } from "lucide-react";
-import Link from "next/link";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { FolderGit2, Star, GitFork, Lock, Unlock, ArrowRight, Settings2 } from "lucide-react"
+import Link from "next/link"
 
-const pendingCommits = [
+const featuredRepositories = [
   {
     id: 1,
-    hash: "a3f2c1d",
-    message: "Add user authentication system",
-    repository: "web-app",
-    branch: "feature/auth",
-    author: "john-doe",
-    timestamp: "2 hours ago",
-    filesChanged: 12,
+    name: "web-app",
+    fullName: "company/web-app",
+    description: "Main web application with React and TypeScript",
+    isPrivate: false,
+    stars: 124,
+    forks: 23,
+    language: "TypeScript",
+    lastActivity: "2 hours ago",
+    pendingCommits: 3,
   },
   {
     id: 2,
-    hash: "b7e9f4a",
-    message: "Fix responsive layout issues on mobile",
-    repository: "mobile-ui",
-    branch: "fix/responsive",
-    author: "jane-smith",
-    timestamp: "4 hours ago",
-    filesChanged: 8,
+    name: "mobile-ui",
+    fullName: "company/mobile-ui",
+    description: "React Native mobile application UI components",
+    isPrivate: true,
+    stars: 45,
+    forks: 8,
+    language: "JavaScript",
+    lastActivity: "1 day ago",
+    pendingCommits: 1,
   },
   {
     id: 3,
-    hash: "c1d8e2b",
-    message: "Update API documentation with new endpoints",
-    repository: "api-docs",
-    branch: "docs/api-update",
-    author: "dev-team",
-    timestamp: "1 day ago",
-    filesChanged: 5,
+    name: "api-backend",
+    fullName: "company/api-backend",
+    description: "Node.js REST API backend with Express and MongoDB",
+    isPrivate: true,
+    stars: 67,
+    forks: 12,
+    language: "JavaScript",
+    lastActivity: "3 days ago",
+    pendingCommits: 5,
   },
-  {
-    id: 4,
-    hash: "d9a3f7c",
-    message: "Optimize database query performance",
-    repository: "backend",
-    branch: "perf/db-optimization",
-    author: "db-admin",
-    timestamp: "1 day ago",
-    filesChanged: 15,
-  },
-];
+]
+
+function getLanguageColor(language: string) {
+  const colors: Record<string, string> = {
+    TypeScript: "bg-blue-500",
+    JavaScript: "bg-yellow-500",
+    MDX: "bg-purple-500",
+    Python: "bg-green-500",
+    Go: "bg-cyan-500",
+  }
+  return colors[language] || "bg-gray-500"
+}
 
 export function DashboardContent() {
   return (
     <div className="flex-1 space-y-8 p-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Commits Ready for PR
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Select a commit to create a Pull Request with AI assistance
-          </p>
+          <h1 className="text-3xl font-bold tracking-tight">Your Repositories</h1>
+          <p className="text-muted-foreground mt-1">Select a repository to view commits and create Pull Requests</p>
         </div>
         <Link href="/settings/templates">
           <Button variant="outline" className="gap-2 bg-transparent">
@@ -75,69 +72,70 @@ export function DashboardContent() {
         </Link>
       </div>
 
-      <div className="space-y-3">
-        {pendingCommits.map((commit) => (
-          <Card
-            key={commit.id}
-            className="hover:border-primary transition-colors"
-          >
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-start gap-4 flex-1">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
-                    <GitCommit className="h-5 w-5 text-muted-foreground" />
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {featuredRepositories.map((repo) => (
+          <Link key={repo.id} href={`/repositories/${repo.id}`}>
+            <Card className="hover:border-primary hover:shadow-md transition-all cursor-pointer h-full">
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
+                      <FolderGit2 className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg">{repo.name}</CardTitle>
+                      <p className="text-xs text-muted-foreground">{repo.fullName}</p>
+                    </div>
                   </div>
-                  <div className="flex-1 space-y-2">
-                    <div className="flex items-center gap-2">
-                      <code className="text-sm font-mono bg-muted px-2 py-0.5 rounded">
-                        {commit.hash}
-                      </code>
-                      <Badge variant="outline" className="text-xs">
-                        {commit.repository}
-                      </Badge>
-                      <span className="text-xs text-muted-foreground">•</span>
-                      <span className="text-xs text-muted-foreground">
-                        {commit.branch}
-                      </span>
-                    </div>
-                    <p className="font-medium text-balance">{commit.message}</p>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <span>{commit.author}</span>
-                      <span>•</span>
-                      <span>{commit.timestamp}</span>
-                      <span>•</span>
-                      <span>{commit.filesChanged} files changed</span>
-                    </div>
+                  {repo.isPrivate ? (
+                    <Lock className="h-4 w-4 text-muted-foreground" />
+                  ) : (
+                    <Unlock className="h-4 w-4 text-muted-foreground" />
+                  )}
+                </div>
+                <CardDescription className="text-pretty line-clamp-2">{repo.description}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-1">
+                    <div className={`h-3 w-3 rounded-full ${getLanguageColor(repo.language)}`} />
+                    {repo.language}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Star className="h-4 w-4" />
+                    {repo.stars}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <GitFork className="h-4 w-4" />
+                    {repo.forks}
                   </div>
                 </div>
-                <Link href={`/pr-editor?commit=${commit.hash}`}>
-                  <Button className="gap-2">
-                    <GitPullRequest className="h-4 w-4" />
-                    Create PR
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
+                {repo.pendingCommits > 0 && (
+                  <Badge variant="secondary" className="w-full justify-center">
+                    {repo.pendingCommits} commit{repo.pendingCommits > 1 ? "s" : ""} ready for PR
+                  </Badge>
+                )}
+                <p className="text-xs text-muted-foreground">Updated {repo.lastActivity}</p>
+              </CardContent>
+            </Card>
+          </Link>
         ))}
       </div>
 
       <Card className="border-dashed">
-        <CardHeader>
-          <CardTitle className="text-lg">Customize PR Templates</CardTitle>
-          <CardDescription>
-            Create custom report templates for your AI-generated Pull Requests
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Link href="/settings/templates">
+        <CardContent className="flex items-center justify-between p-6">
+          <div>
+            <h3 className="font-semibold">View All Repositories</h3>
+            <p className="text-sm text-muted-foreground">Browse and manage all your connected repositories</p>
+          </div>
+          <Link href="/repositories">
             <Button variant="outline" className="gap-2 bg-transparent">
-              <FileText className="h-4 w-4" />
-              Manage Templates
+              View All
+              <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

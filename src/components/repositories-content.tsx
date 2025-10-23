@@ -39,7 +39,8 @@ import {
   Bell,
   BellOff,
 } from "lucide-react";
-import { Repo } from "../../types/repos";
+import Link from "next/link";
+import { Repository } from "../../types/repos";
 
 const organizations = [
   {
@@ -69,7 +70,7 @@ function getLanguageColor(language: string) {
   return colors[language] || "bg-gray-500";
 }
 
-export function RepositoriesContent({ repos }: { repos: Repo[] }) {
+export function RepositoriesContent({ repos }: { repos: Repository[] }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTab, setSelectedTab] = useState("all");
   const [isAddRepoOpen, setIsAddRepoOpen] = useState(false);
@@ -186,8 +187,15 @@ export function RepositoriesContent({ repos }: { repos: Repo[] }) {
                             <Lock className="h-4 w-4 text-muted-foreground" />
                           ) : (
                             <Unlock className="h-4 w-4 text-muted-foreground" />
-                          )}
-                          <h3 className="text-lg font-semibold">{repo.name}</h3>
+                          )}{" "}
+                          <Link
+                            key={repo.id}
+                            href={`/repositories/${repo.name}`}
+                          >
+                            <h3 className="text-lg font-semibold">
+                              {repo.name}
+                            </h3>
+                          </Link>
                         </div>
                         <Badge
                           variant={repo.isConnected ? "secondary" : "outline"}
@@ -273,6 +281,7 @@ export function RepositoriesContent({ repos }: { repos: Repo[] }) {
                   </div>
                 </CardContent>
               </Card>
+              // </Link>
             ))}
           </div>
         </TabsContent>
