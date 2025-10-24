@@ -175,7 +175,7 @@ export function PREditorContent() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <GitBranch className="h-5 w-5" />
-                Repository & Branch
+                Branch
               </CardTitle>
               <CardDescription>
                 Select the repository and branches for your PR

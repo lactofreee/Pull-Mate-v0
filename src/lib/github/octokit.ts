@@ -150,3 +150,46 @@ export async function safeOctokitCall<T>(
     return null;
   }
 }
+
+// PR 생성 로직
+interface CreatePullRequestParams {
+  token: string;
+  owner: string;
+  repo: string;
+  title: string;
+  head: string; // 병합할 브랜치 (ex. feature/login)
+  base: string; // 대상 브랜치 (ex. main)
+  body?: string;
+}
+
+export async function createPullRequest({
+  token,
+  owner,
+  repo,
+  title,
+  head,
+  base,
+  body,
+}: CreatePullRequestParams) {
+  try {
+    const octokit = new Octokit({ auth: token });
+
+    const response = await octokit.request("POST /repos/{owner}/{repo}/pulls", {
+      owner,
+      repo,
+      title,
+      head,
+      base,
+      body,
+    });
+
+    return response.data;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("PR 생성 실패:", error.message);
+    } else {
+      console.error("예상치 못한 에러:", error);
+    }
+    throw new Error("Failed to create pull request");
+  }
+}

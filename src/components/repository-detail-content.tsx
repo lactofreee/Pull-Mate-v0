@@ -195,7 +195,7 @@ export function RepositoryDetailContent({
                       </div>
                     </div>
                     <Link
-                      href={`/pr-editor?commit=${commit.hash}&repo=${repository.id}`}
+                      href={`/pr-editor?owner=${repository.owner}&repo=${repository.name}&base=${repository.defaultBranch}&head=${commit.branch}`}
                     >
                       <Button className="gap-2">
                         <GitPullRequest className="h-4 w-4" />
