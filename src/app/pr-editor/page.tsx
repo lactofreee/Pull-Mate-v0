@@ -37,8 +37,6 @@ export default async function PREditorPage({
     searchParams.repo!
   );
 
-  console.log(branches);
-
   return (
     <div className="min-h-screen bg-background">
       <Header />
