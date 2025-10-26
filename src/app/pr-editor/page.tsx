@@ -31,12 +31,6 @@ export default async function PREditorPage({
     );
   }
 
-  // const branches = await getRepoBranches(
-  //   token,
-  //   searchParams.owner!,
-  //   searchParams.repo!
-  // );
-
   return (
     <div className="min-h-screen bg-background">
       <Header />

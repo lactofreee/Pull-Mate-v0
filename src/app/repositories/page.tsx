@@ -1,6 +1,6 @@
 import { Header } from "@/features/common/header/header";
 import { Sidebar } from "@/components/sidebar";
-import { RepositoriesContent } from "@/components/repositories-content";
+import { RepositoriesContent } from "@/features/repository/components/repositories-content";
 import { auth } from "@/auth";
 import { getUserRepos, safeOctokitCall } from "@/lib/github/octokit";
 import { formatLastActivity } from "../utils/format-last-activity";
@@ -29,8 +29,6 @@ export default async function RepositoriesPage() {
       owner: item.owner.login,
       url: item.html_url,
     })) || [];
-
-  console.log(repos);
 
   return (
     <div className="min-h-screen bg-background">

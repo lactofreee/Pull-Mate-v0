@@ -197,7 +197,10 @@ export async function getSingleBranchCommits(
 
     return detailedCommits;
   } catch (error) {
-    console.error(`❌ getSingleBranchCommits for ${targetBranch} error:`, error);
+    console.error(
+      `❌ getSingleBranchCommits for ${targetBranch} error:`,
+      error
+    );
     return [];
   }
 }
@@ -208,35 +211,26 @@ export async function getRepoCommits(
   owner: string,
   repo: string,
   username: string,
-  baseBranch: string, // 👈 💡 비교 기준이 될 브랜치 (예: 'main')
-  targetBranch: string // 👈 💡 비교 대상이 될 브랜치 (선택된 브랜치)
+  baseBranch: string,
+  targetBranch: string
 ): Promise<CommitInfo[]> {
   try {
     const octokit = new Octokit({ auth: token });
 
-    // 1. 💡 Comparison API를 사용하여 두 브랜치 간의 커밋 차이를 가져옵니다.
-    // data.commits 배열에는 baseBranch에는 없고 targetBranch에만 있는 커밋 목록이 포함됩니다.
     const { data } = await octokit.repos.compareCommits({
       owner,
       repo,
       base: baseBranch,
-      head: targetBranch, // targetBranch에만 있는 커밋이 반환됩니다.
+      head: targetBranch,
     });
 
-    // 2. 반환된 커밋 배열 중 실제로 비교 대상 브랜치에 고유한 커밋만 사용합니다.
     const uniqueCommits = data.commits
-      .filter(
-        // GitHub는 커밋의 상태(status)와 URL을 기반으로 커밋 배열을 반환합니다.
-        // data.commits는 head(targetBranch)에만 존재하는 커밋 목록입니다.
-        // 여기서는 별도의 추가 필터링 없이 API가 반환한 커밋을 그대로 사용합니다.
-        (commit) => commit.commit // 유효한 커밋 객체만 필터링
-      )
+      .filter((commit) => commit.commit)
       .slice(-10)
-      .reverse(); // 최신순 10개만 가져오기 위해 뒤에서 10개를 자르고 순서를 뒤집습니다.
+      .reverse();
 
     const detailedCommits = await Promise.all(
       uniqueCommits.map(async (commit, index) => {
-        // 3. 커밋 상세 정보 조회 (파일 변경 정보 포함)
         const detail = await safeOctokitCall(() =>
           octokit.repos.getCommit({
             owner,
@@ -246,11 +240,8 @@ export async function getRepoCommits(
         );
 
         const filesChanged = detail?.data.files?.length ?? 0;
-
-        // 4. 브랜치 정보 할당: 이 커밋은 targetBranch에 고유한 것으로 간주합니다.
         const branch = targetBranch;
 
-        // 5. 타임스탬프 포맷팅
         const timestamp = formatLastActivity(commit.commit.author?.date ?? "");
 
         return {
@@ -266,14 +257,12 @@ export async function getRepoCommits(
       })
     );
 
-    // 6. 결과는 최신순으로 정렬되어 반환됩니다.
     return detailedCommits;
   } catch (error) {
     console.error(
       `❌ getRepoCommits (Comparison) error between ${baseBranch} and ${targetBranch}:`,
       error
     );
-    // 비교 실패 시 빈 배열 반환
     return [];
   }
 }
