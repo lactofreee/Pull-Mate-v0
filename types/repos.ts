@@ -32,6 +32,24 @@ export interface Repository {
   notifications: boolean;
 }
 
+export interface GitHubBranch {
+  name: string;
+  commit: {
+    sha: string;
+    url: string;
+  };
+  protected: boolean;
+  protection: {
+    enabled: boolean;
+    required_status_checks?: {
+      enforcement_level: string;
+      contexts: string[];
+      checks: Array<{ context: string; app_id: number | null }>;
+    };
+  };
+  protection_url: string;
+}
+
 export interface CommitInfo {
   id: number;
   hash: string;

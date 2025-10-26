@@ -1,8 +1,12 @@
-import { auth } from "@/auth";
-import { RepositoryDetailContent } from "@/components/repository-detail-content";
-import { getRepo, getRepoCommits } from "@/lib/github/octokit";
+import { RepositoryDetailContent } from "@/features/repository/components/repository-detail-content";
+import {
+  getRepo,
+  getRepoBranches,
+  getSingleBranchCommits,
+} from "@/lib/github/octokit";
 import { GitHubRepo, Repository } from "../../../../types/repos";
 import { getSessionUser } from "@/lib/auth/getSessionUser";
+import { RepositoryContent } from "@/features/repository/components/repository-content";
 
 interface RepoPageProps {
   params: { repo: string };
@@ -42,20 +46,40 @@ export function transformRepoData(repo: GitHubRepo): Repository {
 export default async function RepositoryDetailPage({ params }: RepoPageProps) {
   const session = await getSessionUser();
   const token = session?.accessToken;
+
+  if (!token) {
+    return <div>로그인 후 사용해주세요.</div>;
+  }
+
+  const username = session.user?.github?.login ?? "";
+  if (!username) {
+    return <div>GitHub 사용자 정보를 확인할 수 없습니다.</div>;
+  }
+
+  const authProps = { token, username };
   const repoName = params.repo;
 
-  const repo = await getRepo(token!, "lactofreee", repoName);
+  const repo = await getRepo(token, username, repoName);
+  const owner = repo.owner.login;
+
   const formattedRepo = transformRepoData(repo);
-  const commits = await getRepoCommits(
-    token!,
-    repo.owner.login,
-    repoName,
-    session?.user?.github?.login!
-  );
+  const defaultBranch = formattedRepo.defaultBranch;
+
+  const [initialCommits, branches] = await Promise.all([
+    getSingleBranchCommits(token, owner, repoName, username, defaultBranch!),
+    getRepoBranches(token, owner, repoName),
+  ]);
+
+  const branchArr = branches.map((branch) => branch.name);
+
   return (
+    // <RepositoryContent />
     <RepositoryDetailContent
+      authProps={authProps}
       repositoryProps={formattedRepo}
-      commitsProps={commits}
+      initialCommits={initialCommits}
+      branchProps={branchArr}
     />
+    // <div>daw</div>
   );
 }
