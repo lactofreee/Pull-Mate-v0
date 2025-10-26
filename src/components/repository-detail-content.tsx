@@ -10,6 +10,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   GitCommit,
   GitPullRequest,
   Star,
@@ -23,7 +30,9 @@ import {
   FileText,
 } from "lucide-react";
 import Link from "next/link";
-import { CommitInfo, Repository } from "../../types/repos";
+import { CommitInfo, GitHubBranch, Repository } from "../../types/repos";
+import { startTransition, useState, useTransition } from "react";
+import { fetchCommitsByBranch } from "@/features/repository/actions/comit";
 
 function getLanguageColor(language: string) {
   const colors: Record<string, string> = {
@@ -36,15 +45,59 @@ function getLanguageColor(language: string) {
   return colors[language] || "bg-gray-500";
 }
 
+interface AuthProps {
+  token: string;
+  username: string | undefined;
+}
+
 export function RepositoryDetailContent({
+  authProps,
   repositoryProps,
-  commitsProps,
+  initialCommits,
+  branchProps,
 }: {
+  authProps: AuthProps;
   repositoryProps: Repository;
-  commitsProps: CommitInfo[];
+  initialCommits: CommitInfo[];
+  branchProps: string[];
 }) {
   const repository = repositoryProps;
-  const commits = commitsProps || [];
+
+  const defaultBranch = repository.defaultBranch;
+  const [selectedBranch, setSelectedBranch] = useState<string>(
+    defaultBranch || "default"
+  );
+  const [commits, setCommits] = useState<CommitInfo[]>(initialCommits);
+  const [isPending, startTransition] = useTransition();
+
+  const branches = [...branchProps];
+  const filteredCommits =
+    selectedBranch === defaultBranch
+      ? initialCommits
+      : commits.filter((c) => c.branch === selectedBranch);
+
+  const handleBranchChange = (newBranch: string) => {
+    setSelectedBranch(newBranch);
+
+    startTransition(async () => {
+      try {
+        const newCommits = await fetchCommitsByBranch(
+          authProps.token,
+          repositoryProps.owner,
+          repositoryProps.name,
+          authProps.username!,
+          repository.defaultBranch!,
+          newBranch
+        );
+        console.log(`new commits:${JSON.stringify(newCommits, null, 2)}`);
+        setCommits(newCommits);
+      } catch (error) {
+        console.error("커밋 조회 실패:", error);
+        alert("커밋을 가져오는 데 실패했습니다.");
+        setCommits([]);
+      }
+    });
+  };
 
   if (!repository) {
     return (
@@ -157,55 +210,94 @@ export function RepositoryDetailContent({
               <p className="text-sm text-muted-foreground">
                 {commits.length} commit{commits.length !== 1 ? "s" : ""} ready
                 for Pull Request
+                {filteredCommits.length} commit
+                {filteredCommits.length !== 1 ? "s" : ""}{" "}
+                {selectedBranch !== "all"
+                  ? `in ${selectedBranch}`
+                  : "across all branches"}
               </p>
             </div>
+            <Select
+              value={selectedBranch}
+              onValueChange={handleBranchChange}
+              disabled={isPending}
+            >
+              <SelectTrigger className="w-[200px]">
+                <GitBranch className="h-4 w-4 mr-2" />
+                <SelectValue placeholder="Select branch" />
+              </SelectTrigger>
+              <SelectContent>
+                {branches.map((branch) => (
+                  <SelectItem key={branch} value={branch}>
+                    {branch}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
+          {isPending && (
+            <p className="text-blue-500">새 브랜치 커밋을 로딩 중...</p>
+          )}
+
           <div className="space-y-3">
-            {commits.map((commit) => (
-              <Card
-                key={commit.id}
-                className="hover:border-primary transition-colors"
-              >
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-start gap-4 flex-1">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
-                        <GitCommit className="h-5 w-5 text-muted-foreground" />
-                      </div>
-                      <div className="flex-1 space-y-2">
-                        <div className="flex items-center gap-2">
-                          <code className="text-sm font-mono bg-muted px-2 py-0.5 rounded">
-                            {commit.hash}
-                          </code>
-                          <Badge variant="outline" className="text-xs">
-                            {commit.branch}
-                          </Badge>
+            {filteredCommits.length > 0 ? (
+              filteredCommits.map((commit) => (
+                <Card
+                  key={commit.id}
+                  className="hover:border-primary transition-colors"
+                >
+                  <CardContent className="p-6">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex items-start gap-4 flex-1">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
+                          <GitCommit className="h-5 w-5 text-muted-foreground" />
                         </div>
-                        <p className="font-medium text-balance">
-                          {commit.message}
-                        </p>
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                          <span>{commit.author}</span>
-                          <span>•</span>
-                          <span>{commit.timestamp}</span>
-                          <span>•</span>
-                          <span>{commit.filesChanged} files changed</span>
+                        <div className="flex-1 space-y-2">
+                          <div className="flex items-center gap-2">
+                            <code className="text-sm font-mono bg-muted px-2 py-0.5 rounded">
+                              {commit.hash}
+                            </code>
+                            <Badge variant="outline" className="text-xs">
+                              {commit.branch}
+                            </Badge>
+                          </div>
+                          <p className="font-medium text-balance">
+                            {commit.message}
+                          </p>
+                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                            <span>{commit.author}</span>
+                            <span>•</span>
+                            <span>{commit.timestamp}</span>
+                            <span>•</span>
+                            <span>{commit.filesChanged} files changed</span>
+                          </div>
                         </div>
                       </div>
+                      <Link
+                        href={`/pr-editor?owner=${repository.owner}&repo=${repository.name}&base=${repository.defaultBranch}&head=${commit.branch}`}
+                      >
+                        <Button className="gap-2">
+                          <GitPullRequest className="h-4 w-4" />
+                          Create PR
+                        </Button>
+                      </Link>
                     </div>
-                    <Link
-                      href={`/pr-editor?owner=${repository.owner}&repo=${repository.name}&base=${repository.defaultBranch}&head=${commit.branch}`}
-                    >
-                      <Button className="gap-2">
-                        <GitPullRequest className="h-4 w-4" />
-                        Create PR
-                      </Button>
-                    </Link>
-                  </div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              //   // ))}
+              <Card className="border-dashed">
+                <CardContent className="flex flex-col items-center justify-center p-12 text-center">
+                  <GitCommit className="h-12 w-12 text-muted-foreground mb-4" />
+                  <h3 className="font-semibold mb-2">No Commits Found</h3>
+                  <p className="text-sm text-muted-foreground">
+                    No commits found in the selected branch
+                  </p>
                 </CardContent>
               </Card>
-            ))}
+            )}
           </div>
         </TabsContent>
 
